@@ -1,0 +1,7 @@
+*.iso
+*.btn
+*.ign
+*.rpm
+auth.json
+.build
+.push
