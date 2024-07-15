@@ -54,7 +54,7 @@ debug:
 boot-image/rhcos-live.x86_64.iso:
 	curl -Lo $@ https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/$(RHCOS_VERSION)/latest/rhcos-live.x86_64.iso
 
-boot-image/bootc$(ISO_SUFFIX).btn: boot-image/bootc.btn.tpl overlays/auth/etc/ostree/auth.json .build
+boot-image/bootc$(ISO_SUFFIX).btn: boot-image/bootc.btn.tpl overlays/auth/etc/ostree/auth.json
 	IMAGE=$(IMAGE) AUTH='$(strip $(file < overlays/auth/etc/ostree/auth.json))' DISK=$(DISK) envsubst '$$IMAGE,$$AUTH,$$DISK' < $< >$@
 
 boot-image/bootc$(ISO_SUFFIX).ign: boot-image/bootc$(ISO_SUFFIX).btn
