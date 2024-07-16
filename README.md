@@ -118,10 +118,16 @@ the `make` invocation or exporting them in your environment.
     from the registry, specified.
 - `QOR_VERSION` (default: `0.5.1.3-1`)
   - The version of the QoR RPM available in the `qor-rpm` directory.
-- `DISK` (default: `vda`)
+- `DEFAULT_DISK` (default: `vda`)
   - The disk inside `/dev` that will be used for installation in the live ISO.
     For bare metal installation, this can be something simple like `nvme0n1` or
-    something more complicated like `disk/by-path/pci-0000:01:00.0-nvme-1`.
+    something more complicated like `disk/by-path/pci-0000:01:00.0-nvme-1`. Note
+    that the installer will try to use a block device if it finds exactly one
+    disk, but will otherwise select this disk if it's in the system.
+- `CONNECTIVITY_TEST` (default: `google.com`)
+  - The IP address or DNS name that the installer will ping to prove connectivity.
+    If you're on a private network during installation, this should be something
+    that's adequate to prove that you can reach your container image registry.
 - `RHCOS_VERSION` (default: `4.16`)
   - The version of RHEL CoreOS to use to put together our live ISO. Note that
     this usage of RHCOS is wildly unsupported, but does allow us much more
@@ -136,7 +142,7 @@ the `make` invocation or exporting them in your environment.
     Butane/Ignition files. Since the defaults for the installed-and-followed
     image tag, install disk, etc. get embedded into the image, this is useful to
     create different ISOs with different parameters. As an example, `make burn
-    DISK=nvme0n1 ISO_SUFFIX=-metal` would create and burn an ISO with
+    DEFAULT_DISK=nvme0n1 ISO_SUFFIX=-metal` would create and burn an ISO with
     `/dev/nvme0n1` as the target install disk but otherwise unchanged from the
     defaults. This ISO wouldn't replace the default one that you may have created
     for a virtual machine, targeting `vda` (by default).

@@ -8,7 +8,8 @@ IMAGE = $(REGISTRY)/$(REPOSITORY):$(TAG)
 QOR_VERSION ?= 0.5.1.3-1
 
 # Vars only for building the custom rhcos-based installer
-DISK ?= vda
+DEFAULT_DISK ?= vda
+CONNECTIVITY_TEST ?= google.com
 RHCOS_VERSION ?= 4.16
 ISO_SUFFIX ?=
 # ISO_DEST is the device to burn the iso to (such as a USB flash drive for live booting the installer on metal)
@@ -55,10 +56,10 @@ boot-image/rhcos-live.x86_64.iso:
 	curl -Lo $@ https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/$(RHCOS_VERSION)/latest/rhcos-live.x86_64.iso
 
 boot-image/bootc$(ISO_SUFFIX).btn: boot-image/bootc.btn.tpl overlays/auth/etc/ostree/auth.json
-	IMAGE=$(IMAGE) AUTH='$(strip $(file < overlays/auth/etc/ostree/auth.json))' DISK=$(DISK) envsubst '$$IMAGE,$$AUTH,$$DISK' < $< >$@
+	IMAGE=$(IMAGE) AUTH='$(strip $(file < overlays/auth/etc/ostree/auth.json))' DEFAULT_DISK=$(DEFAULT_DISK) CONNECTIVITY_TEST=$(CONNECTIVITY_TEST) envsubst '$$IMAGE,$$AUTH,$$DEFAULT_DISK,$$CONNECTIVITY_TEST' < $< >$@
 
 boot-image/bootc$(ISO_SUFFIX).ign: boot-image/bootc$(ISO_SUFFIX).btn
-	$(RUNTIME) run --rm -i quay.io/coreos/butane:release --pretty --strict < $< >$@
+	$(RUNTIME) run --rm -iv $${PWD}:/pwd --workdir /pwd --security-opt label=disable quay.io/coreos/butane:release --pretty --strict $< >$@
 
 boot-image/qor-bootc-rhcos$(ISO_SUFFIX).iso: boot-image/bootc$(ISO_SUFFIX).ign boot-image/rhcos-live.x86_64.iso
 	@if [ -e $@ ]; then rm -f $@; fi
