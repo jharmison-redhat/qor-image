@@ -5,3 +5,5 @@
 auth.json
 .build
 .push
+tmp/*
+!tmp/.gitkeep
